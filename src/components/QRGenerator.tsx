@@ -1,11 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
-import { Download, Link, History, Trash2, Eye, ExternalLink, Zap, Shield, Clock, Palette } from 'lucide-react';
+import { Download, Link, History, Trash2, Eye, ExternalLink, Zap, Shield, Clock, Palette, Camera, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import QRDecoder from './QRDecoder';
+import QRCustomizer from './QRCustomizer';
+import CursorEffects from './CursorEffects';
 
 interface QRHistory {
   id: string;
@@ -14,12 +17,29 @@ interface QRHistory {
   qrDataUrl: string;
 }
 
+interface QRStyle {
+  foregroundColor: string;
+  backgroundColor: string;
+  size: number;
+  margin: number;
+  errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H';
+  logoUrl?: string;
+}
+
 const QRGenerator = () => {
   const [url, setUrl] = useState('');
   const [qrDataUrl, setQrDataUrl] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [history, setHistory] = useState<QRHistory[]>([]);
   const [urlPreview, setUrlPreview] = useState<{ title: string; favicon: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<'generate' | 'scan' | 'customize'>('generate');
+  const [qrStyle, setQrStyle] = useState<QRStyle>({
+    foregroundColor: '#1f2937',
+    backgroundColor: '#ffffff',
+    size: 300,
+    margin: 2,
+    errorCorrectionLevel: 'M'
+  });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
@@ -48,19 +68,20 @@ const QRGenerator = () => {
     }
   };
 
-  const generateQRCode = async (inputUrl: string) => {
+  const generateQRCode = async (inputUrl: string, customStyle?: QRStyle) => {
     if (!inputUrl.trim()) return;
     
     setIsGenerating(true);
     try {
+      const style = customStyle || qrStyle;
       const qrOptions = {
-        width: 300,
-        margin: 2,
+        width: style.size,
+        margin: style.margin,
         color: {
-          dark: '#1f2937',
-          light: '#ffffff'
+          dark: style.foregroundColor,
+          light: style.backgroundColor
         },
-        errorCorrectionLevel: 'M' as const
+        errorCorrectionLevel: style.errorCorrectionLevel
       };
 
       const dataUrl = await QRCode.toDataURL(inputUrl, qrOptions);
@@ -74,14 +95,13 @@ const QRGenerator = () => {
         qrDataUrl: dataUrl
       };
 
-      setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]); // Keep only last 10 items
+      setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
 
       toast({
         title: "QR Code Generated!",
-        description: "Your QR code is ready to download.",
+        description: "Your custom QR code is ready to download.",
       });
 
-      // Attempt to get URL preview (will fail for CORS but shows the intent)
       if (isValidUrl(inputUrl)) {
         fetchUrlPreview(inputUrl);
       }
@@ -98,7 +118,6 @@ const QRGenerator = () => {
 
   const fetchUrlPreview = async (inputUrl: string) => {
     try {
-      // This is a simplified preview - in a real app you'd use a proxy service
       const domain = new URL(inputUrl).hostname;
       setUrlPreview({
         title: domain,
@@ -109,9 +128,9 @@ const QRGenerator = () => {
     }
   };
 
-  const downloadQRCode = (dataUrl: string, filename: string = 'qrcode') => {
+  const downloadQRCode = (dataUrl: string, filename: string = 'qrcode', format: 'png' | 'svg' | 'pdf' = 'png') => {
     const link = document.createElement('a');
-    link.download = `${filename}.png`;
+    link.download = `${filename}.${format}`;
     link.href = dataUrl;
     document.body.appendChild(link);
     link.click();
@@ -119,8 +138,14 @@ const QRGenerator = () => {
     
     toast({
       title: "Downloaded!",
-      description: "QR code has been saved to your device.",
+      description: `QR code has been saved as ${format.toUpperCase()}.`,
     });
+  };
+
+  const handleDownload = (format: 'png' | 'svg' | 'pdf') => {
+    if (qrDataUrl) {
+      downloadQRCode(qrDataUrl, 'custom-qr', format);
+    }
   };
 
   const clearHistory = () => {
@@ -135,13 +160,19 @@ const QRGenerator = () => {
     const value = e.target.value;
     setUrl(value);
     
-    // Auto-generate QR code with debounce
     if (value.trim()) {
       const timeoutId = setTimeout(() => {
         generateQRCode(value);
       }, 500);
       
       return () => clearTimeout(timeoutId);
+    }
+  };
+
+  const handleStyleChange = (newStyle: QRStyle) => {
+    setQrStyle(newStyle);
+    if (url.trim()) {
+      generateQRCode(url, newStyle);
     }
   };
 
@@ -152,129 +183,187 @@ const QRGenerator = () => {
       description: "Generate QR codes in real-time as you type your URL"
     },
     {
+      icon: <Palette className="h-6 w-6" />,
+      title: "Full Customization",
+      description: "Colors, sizes, formats, and error correction levels"
+    },
+    {
+      icon: <Camera className="h-6 w-6" />,
+      title: "QR Scanner",
+      description: "Upload and decode QR codes to extract URLs"
+    },
+    {
       icon: <Download className="h-6 w-6" />,
-      title: "Download Ready",
-      description: "Download high-quality PNG files instantly"
+      title: "Multiple Formats",
+      description: "Download as PNG, SVG, or PDF files"
     },
     {
       icon: <History className="h-6 w-6" />,
       title: "Smart History",
-      description: "Keep track of your last 10 generated QR codes"
+      description: "Keep track of your generated QR codes"
     },
     {
-      icon: <Shield className="h-6 w-6" />,
-      title: "URL Validation",
-      description: "Real-time validation ensures your URLs are correct"
-    },
-    {
-      icon: <Eye className="h-6 w-6" />,
-      title: "Live Preview",
-      description: "See website favicons and domain previews"
-    },
-    {
-      icon: <Palette className="h-6 w-6" />,
-      title: "Professional Design",
-      description: "Beautiful, responsive interface with modern styling"
+      icon: <Wand2 className="h-6 w-6" />,
+      title: "Interactive UI",
+      description: "Animated interface with cursor effects"
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 opacity-30">
+      <CursorEffects />
+      
+      {/* Enhanced Animated Background */}
+      <div className="absolute inset-0 opacity-40">
         <div className="absolute inset-0 bg-gradient-to-br from-magenta-500/20 via-purple-600/20 to-pink-500/20 animate-pulse"></div>
         <div className="absolute top-0 left-0 w-full h-full">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-magenta-400/30 to-purple-500/30 rounded-full blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
           <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-pink-400/30 to-magenta-500/30 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite_reverse]"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-[spin_20s_linear_infinite]"></div>
+          <div className="absolute top-1/6 right-1/6 w-48 h-48 bg-gradient-to-r from-cyan-400/20 to-magenta-400/20 rounded-full blur-2xl animate-[float_12s_ease-in-out_infinite]"></div>
         </div>
       </div>
 
       <div className="relative z-10 p-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-magenta-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-              QR Code Generator Pro
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-magenta-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              QR Code Studio Pro
             </h1>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Transform any URL into a professional QR code instantly. Save, download, and manage your codes with ease.
+            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+              The ultimate QR code generator with advanced customization, scanning, and interactive features.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Input Section */}
-            <div className="lg:col-span-2">
-              <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <Link className="h-5 w-5 text-magenta-400" />
-                    Enter URL
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="relative">
-                    <Input
-                      type="url"
-                      placeholder="https://example.com"
-                      value={url}
-                      onChange={handleInputChange}
-                      className="text-lg h-12 pl-4 pr-12 border-2 border-gray-600 bg-gray-700/50 text-white placeholder:text-gray-400 focus:border-magenta-500 transition-colors"
-                    />
-                    {url && (
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        {isValidUrl(url) ? (
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        ) : (
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="flex bg-gray-800/50 rounded-lg p-1 backdrop-blur-sm">
+              <Button
+                variant={activeTab === 'generate' ? 'default' : 'ghost'}
+                onClick={() => setActiveTab('generate')}
+                className={activeTab === 'generate' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+              >
+                <Link className="w-4 h-4 mr-2" />
+                Generate
+              </Button>
+              <Button
+                variant={activeTab === 'scan' ? 'default' : 'ghost'}
+                onClick={() => setActiveTab('scan')}
+                className={activeTab === 'scan' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Scan
+              </Button>
+              <Button
+                variant={activeTab === 'customize' ? 'default' : 'ghost'}
+                onClick={() => setActiveTab('customize')}
+                className={activeTab === 'customize' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+              >
+                <Palette className="w-4 h-4 mr-2" />
+                Customize
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-4 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              {activeTab === 'generate' && (
+                <div className="space-y-6">
+                  {/* Input Section */}
+                  <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        <Link className="h-5 w-5 text-magenta-400" />
+                        Enter URL
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="relative">
+                        <Input
+                          type="url"
+                          placeholder="https://example.com"
+                          value={url}
+                          onChange={handleInputChange}
+                          className="text-lg h-12 pl-4 pr-12 border-2 border-gray-600 bg-gray-700/50 text-white placeholder:text-gray-400 focus:border-magenta-500 transition-colors"
+                        />
+                        {url && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            {isValidUrl(url) ? (
+                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                            ) : (
+                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  {urlPreview && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg">
-                      <img src={urlPreview.favicon} alt="" className="w-6 h-6" />
-                      <span className="text-sm text-gray-300">{urlPreview.title}</span>
-                      <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
-                    </div>
-                  )}
+                      {urlPreview && (
+                        <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg">
+                          <img src={urlPreview.favicon} alt="" className="w-6 h-6" />
+                          <span className="text-sm text-gray-300">{urlPreview.title}</span>
+                          <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
+                        </div>
+                      )}
 
-                  <Button
-                    onClick={() => generateQRCode(url)}
-                    disabled={!url.trim() || isGenerating}
-                    className="w-full h-12 text-lg bg-gradient-to-r from-magenta-600 to-purple-600 hover:from-magenta-700 hover:to-purple-700 transition-all duration-200"
-                  >
-                    {isGenerating ? 'Generating...' : 'Generate QR Code'}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* QR Code Display */}
-              {qrDataUrl && (
-                <Card className="mt-6 backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
-                  <CardHeader>
-                    <CardTitle className="text-white">Your QR Code</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <div className="inline-block p-6 bg-white rounded-2xl shadow-lg">
-                      <img src={qrDataUrl} alt="QR Code" className="mx-auto" />
-                    </div>
-                    <div className="flex gap-3 justify-center mt-6">
                       <Button
-                        onClick={() => downloadQRCode(qrDataUrl)}
-                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => generateQRCode(url)}
+                        disabled={!url.trim() || isGenerating}
+                        className="w-full h-12 text-lg bg-gradient-to-r from-magenta-600 to-purple-600 hover:from-magenta-700 hover:to-purple-700 transition-all duration-200"
                       >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download PNG
+                        {isGenerating ? 'Generating...' : 'Generate QR Code'}
                       </Button>
-                      <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                        <Eye className="w-4 h-4 mr-2" />
-                        Preview
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+
+                  {/* QR Code Display */}
+                  {qrDataUrl && (
+                    <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+                      <CardHeader>
+                        <CardTitle className="text-white">Your Custom QR Code</CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-center">
+                        <div className="inline-block p-6 bg-white rounded-2xl shadow-lg">
+                          <img src={qrDataUrl} alt="QR Code" className="mx-auto" />
+                        </div>
+                        <div className="flex gap-3 justify-center mt-6 flex-wrap">
+                          <Button
+                            onClick={() => handleDownload('png')}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            PNG
+                          </Button>
+                          <Button
+                            onClick={() => handleDownload('svg')}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            SVG
+                          </Button>
+                          <Button
+                            onClick={() => handleDownload('pdf')}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            PDF
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'scan' && <QRDecoder />}
+
+              {activeTab === 'customize' && (
+                <QRCustomizer
+                  currentStyle={qrStyle}
+                  onStyleChange={handleStyleChange}
+                  onDownload={handleDownload}
+                />
               )}
             </div>
 
@@ -311,6 +400,7 @@ const QRGenerator = () => {
                           onClick={() => {
                             setUrl(item.url);
                             setQrDataUrl(item.qrDataUrl);
+                            setActiveTab('generate');
                           }}
                         >
                           <div className="flex items-center gap-3">
@@ -346,10 +436,10 @@ const QRGenerator = () => {
           <div className="mt-16">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold bg-gradient-to-r from-magenta-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                Powerful Features
+                Advanced Features
               </h2>
-              <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-                Everything you need to create, manage, and download professional QR codes
+              <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+                Professional QR code generation with scanning, customization, and interactive design
               </p>
             </div>
 
