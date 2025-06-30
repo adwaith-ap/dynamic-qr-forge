@@ -205,22 +205,22 @@ const QRGenerator = () => {
     {
       icon: <Wand2 className="h-6 w-6" />,
       title: "Interactive UI",
-      description: "Animated interface with cursor effects"
+      description: "Magnetic cursor with smooth animations"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden cursor-none">
       <CursorEffects />
       
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 opacity-40">
-        <div className="absolute inset-0 bg-gradient-to-br from-magenta-500/20 via-purple-600/20 to-pink-500/20 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-gray-900/20 to-red-800/20 animate-pulse"></div>
         <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-magenta-400/30 to-purple-500/30 rounded-full blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
-          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-pink-400/30 to-magenta-500/30 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite_reverse]"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-[spin_20s_linear_infinite]"></div>
-          <div className="absolute top-1/6 right-1/6 w-48 h-48 bg-gradient-to-r from-cyan-400/20 to-magenta-400/20 rounded-full blur-2xl animate-[float_12s_ease-in-out_infinite]"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-red-600/30 to-red-800/30 rounded-full blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
+          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-red-700/30 to-red-900/30 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite_reverse]"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-red-500/20 to-red-700/20 rounded-full blur-2xl animate-[spin_20s_linear_infinite]"></div>
+          <div className="absolute top-1/6 right-1/6 w-48 h-48 bg-gradient-to-r from-red-400/20 to-red-600/20 rounded-full blur-2xl animate-[float_12s_ease-in-out_infinite]"></div>
         </div>
       </div>
 
@@ -228,7 +228,7 @@ const QRGenerator = () => {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-magenta-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-red-400 via-red-500 to-red-600 bg-clip-text text-transparent mb-4">
               QR Code Studio Pro
             </h1>
             <p className="text-gray-300 text-lg max-w-3xl mx-auto">
@@ -238,11 +238,11 @@ const QRGenerator = () => {
 
           {/* Tab Navigation */}
           <div className="flex justify-center mb-8">
-            <div className="flex bg-gray-800/50 rounded-lg p-1 backdrop-blur-sm">
+            <div className="flex bg-gray-900/50 rounded-lg p-1 backdrop-blur-sm border border-red-900/20">
               <Button
                 variant={activeTab === 'generate' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('generate')}
-                className={activeTab === 'generate' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+                className={activeTab === 'generate' ? 'bg-red-600 hover:bg-red-700 text-white' : 'text-gray-300 hover:bg-gray-800'}
               >
                 <Link className="w-4 h-4 mr-2" />
                 Generate
@@ -250,7 +250,7 @@ const QRGenerator = () => {
               <Button
                 variant={activeTab === 'scan' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('scan')}
-                className={activeTab === 'scan' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+                className={activeTab === 'scan' ? 'bg-red-600 hover:bg-red-700 text-white' : 'text-gray-300 hover:bg-gray-800'}
               >
                 <Camera className="w-4 h-4 mr-2" />
                 Scan
@@ -258,7 +258,7 @@ const QRGenerator = () => {
               <Button
                 variant={activeTab === 'customize' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('customize')}
-                className={activeTab === 'customize' ? 'bg-magenta-600 hover:bg-magenta-700' : 'text-gray-300 hover:bg-gray-700'}
+                className={activeTab === 'customize' ? 'bg-red-600 hover:bg-red-700 text-white' : 'text-gray-300 hover:bg-gray-800'}
               >
                 <Palette className="w-4 h-4 mr-2" />
                 Customize
@@ -272,10 +272,10 @@ const QRGenerator = () => {
               {activeTab === 'generate' && (
                 <div className="space-y-6">
                   {/* Input Section */}
-                  <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+                  <Card className="backdrop-blur-sm bg-gray-900/50 border border-red-900/30 shadow-xl">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-white">
-                        <Link className="h-5 w-5 text-magenta-400" />
+                        <Link className="h-5 w-5 text-red-400" />
                         Enter URL
                       </CardTitle>
                     </CardHeader>
@@ -286,7 +286,7 @@ const QRGenerator = () => {
                           placeholder="https://example.com"
                           value={url}
                           onChange={handleInputChange}
-                          className="text-lg h-12 pl-4 pr-12 border-2 border-gray-600 bg-gray-700/50 text-white placeholder:text-gray-400 focus:border-magenta-500 transition-colors"
+                          className="text-lg h-12 pl-4 pr-12 border-2 border-red-800/50 bg-gray-800/50 text-white placeholder:text-gray-400 focus:border-red-500 transition-colors"
                         />
                         {url && (
                           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -300,7 +300,7 @@ const QRGenerator = () => {
                       </div>
 
                       {urlPreview && (
-                        <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg">
+                        <div className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg border border-red-900/20">
                           <img src={urlPreview.favicon} alt="" className="w-6 h-6" />
                           <span className="text-sm text-gray-300">{urlPreview.title}</span>
                           <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
@@ -310,7 +310,7 @@ const QRGenerator = () => {
                       <Button
                         onClick={() => generateQRCode(url)}
                         disabled={!url.trim() || isGenerating}
-                        className="w-full h-12 text-lg bg-gradient-to-r from-magenta-600 to-purple-600 hover:from-magenta-700 hover:to-purple-700 transition-all duration-200"
+                        className="w-full h-12 text-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all duration-200 text-white"
                       >
                         {isGenerating ? 'Generating...' : 'Generate QR Code'}
                       </Button>
@@ -319,12 +319,12 @@ const QRGenerator = () => {
 
                   {/* QR Code Display */}
                   {qrDataUrl && (
-                    <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+                    <Card className="backdrop-blur-sm bg-gray-900/50 border border-red-900/30 shadow-xl">
                       <CardHeader>
                         <CardTitle className="text-white">Your Custom QR Code</CardTitle>
                       </CardHeader>
                       <CardContent className="text-center">
-                        <div className="inline-block p-6 bg-white rounded-2xl shadow-lg">
+                        <div className="inline-block p-6 bg-white rounded-2xl shadow-lg border border-red-900/20">
                           <img src={qrDataUrl} alt="QR Code" className="mx-auto" />
                         </div>
                         <div className="flex gap-3 justify-center mt-6 flex-wrap">
@@ -369,11 +369,11 @@ const QRGenerator = () => {
 
             {/* History Sidebar */}
             <div>
-              <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+              <Card className="backdrop-blur-sm bg-gray-900/50 border border-red-900/30 shadow-xl">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-white">
-                      <History className="h-5 w-5 text-magenta-400" />
+                      <History className="h-5 w-5 text-red-400" />
                       Recent QR Codes
                     </CardTitle>
                     {history.length > 0 && (
@@ -396,7 +396,7 @@ const QRGenerator = () => {
                       {history.map((item) => (
                         <div
                           key={item.id}
-                          className="group p-3 rounded-lg border border-gray-600 hover:border-magenta-500 hover:bg-gray-700/50 transition-all cursor-pointer"
+                          className="group p-3 rounded-lg border border-red-900/30 hover:border-red-500 hover:bg-gray-800/50 transition-all cursor-pointer"
                           onClick={() => {
                             setUrl(item.url);
                             setQrDataUrl(item.qrDataUrl);
@@ -435,7 +435,7 @@ const QRGenerator = () => {
           {/* Features Section */}
           <div className="mt-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-magenta-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 via-red-500 to-red-600 bg-clip-text text-transparent mb-4">
                 Advanced Features
               </h2>
               <p className="text-gray-300 text-lg max-w-3xl mx-auto">
@@ -445,9 +445,9 @@ const QRGenerator = () => {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature, index) => (
-                <Card key={index} className="backdrop-blur-sm bg-gray-800/30 border border-gray-700 hover:border-magenta-500/50 transition-all duration-300 hover:transform hover:scale-105">
+                <Card key={index} className="backdrop-blur-sm bg-gray-900/30 border border-red-900/30 hover:border-red-500/50 transition-all duration-300 hover:transform hover:scale-105">
                   <CardContent className="p-6 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-magenta-500 to-purple-500 rounded-lg mb-4 text-white">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-red-600 to-red-700 rounded-lg mb-4 text-white">
                       {feature.icon}
                     </div>
                     <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>

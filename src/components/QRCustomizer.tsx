@@ -34,17 +34,17 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
 
   const presetColors = [
     { name: 'Classic', fg: '#000000', bg: '#ffffff' },
-    { name: 'Magenta', fg: '#d946ef', bg: '#ffffff' },
-    { name: 'Purple', fg: '#7c3aed', bg: '#ffffff' },
-    { name: 'Pink', fg: '#ec4899', bg: '#ffffff' },
+    { name: 'Red', fg: '#dc2626', bg: '#ffffff' },
+    { name: 'Dark Red', fg: '#991b1b', bg: '#ffffff' },
+    { name: 'Crimson', fg: '#dc143c', bg: '#ffffff' },
     { name: 'Dark', fg: '#ffffff', bg: '#1f2937' },
   ];
 
   return (
-    <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+    <Card className="backdrop-blur-sm bg-gray-900/50 border border-red-900/30 shadow-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
-          <Settings className="h-5 w-5 text-magenta-400" />
+          <Settings className="h-5 w-5 text-red-400" />
           Customize QR Code
         </CardTitle>
       </CardHeader>
@@ -62,7 +62,7 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
                   handleStyleChange('foregroundColor', preset.fg);
                   handleStyleChange('backgroundColor', preset.bg);
                 }}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-red-800/50 text-gray-300 hover:bg-gray-800"
               >
                 <div 
                   className="w-3 h-3 rounded-full mr-2 border border-gray-400"
@@ -83,13 +83,13 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
                 type="color"
                 value={currentStyle.foregroundColor}
                 onChange={(e) => handleStyleChange('foregroundColor', e.target.value)}
-                className="w-12 h-10 p-1 border-gray-600 bg-gray-700"
+                className="w-12 h-10 p-1 border-red-800/50 bg-gray-800"
               />
               <Input
                 type="text"
                 value={currentStyle.foregroundColor}
                 onChange={(e) => handleStyleChange('foregroundColor', e.target.value)}
-                className="flex-1 border-gray-600 bg-gray-700 text-white"
+                className="flex-1 border-red-800/50 bg-gray-800 text-white"
               />
             </div>
           </div>
@@ -101,13 +101,13 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
                 type="color"
                 value={currentStyle.backgroundColor}
                 onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                className="w-12 h-10 p-1 border-gray-600 bg-gray-700"
+                className="w-12 h-10 p-1 border-red-800/50 bg-gray-800"
               />
               <Input
                 type="text"
                 value={currentStyle.backgroundColor}
                 onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                className="flex-1 border-gray-600 bg-gray-700 text-white"
+                className="flex-1 border-red-800/50 bg-gray-800 text-white"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
               max="800"
               value={currentStyle.size}
               onChange={(e) => handleStyleChange('size', parseInt(e.target.value))}
-              className="border-gray-600 bg-gray-700"
+              className="border-red-800/50 bg-gray-800"
             />
             <span className="text-xs text-gray-400">{currentStyle.size}px</span>
           </div>
@@ -136,7 +136,7 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
               max="8"
               value={currentStyle.margin}
               onChange={(e) => handleStyleChange('margin', parseInt(e.target.value))}
-              className="border-gray-600 bg-gray-700"
+              className="border-red-800/50 bg-gray-800"
             />
             <span className="text-xs text-gray-400">{currentStyle.margin}</span>
           </div>
@@ -154,8 +154,8 @@ const QRCustomizer: React.FC<QRCustomizerProps> = ({
                 onClick={() => handleStyleChange('errorCorrectionLevel', level)}
                 className={
                   currentStyle.errorCorrectionLevel === level
-                    ? "bg-magenta-600 hover:bg-magenta-700"
-                    : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "border-red-800/50 text-gray-300 hover:bg-gray-800"
                 }
               >
                 {level}

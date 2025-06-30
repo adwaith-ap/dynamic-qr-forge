@@ -79,10 +79,10 @@ const QRDecoder = () => {
   };
 
   return (
-    <Card className="backdrop-blur-sm bg-gray-800/50 border border-gray-700 shadow-xl">
+    <Card className="backdrop-blur-sm bg-gray-900/50 border border-red-900/30 shadow-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
-          <Camera className="h-5 w-5 text-magenta-400" />
+          <Camera className="h-5 w-5 text-red-400" />
           QR Code Scanner
         </CardTitle>
       </CardHeader>
@@ -98,16 +98,16 @@ const QRDecoder = () => {
           />
           <label
             htmlFor="qr-upload"
-            className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-magenta-500 transition-colors bg-gray-700/30"
+            className="flex items-center justify-center w-full h-32 border-2 border-dashed border-red-800/50 rounded-lg cursor-pointer hover:border-red-500 transition-colors bg-gray-800/30"
           >
             {isDecoding ? (
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-magenta-400 mx-auto mb-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-400 mx-auto mb-2"></div>
                 <p className="text-gray-300">Decoding...</p>
               </div>
             ) : (
               <div className="text-center">
-                <Upload className="h-8 w-8 text-magenta-400 mx-auto mb-2" />
+                <Upload className="h-8 w-8 text-red-400 mx-auto mb-2" />
                 <p className="text-gray-300">Upload QR Code Image</p>
                 <p className="text-sm text-gray-400">PNG, JPG, or other image formats</p>
               </div>
@@ -117,9 +117,9 @@ const QRDecoder = () => {
 
         {decodedUrl && (
           <div className="space-y-3">
-            <div className="p-4 bg-gray-700/50 rounded-lg">
+            <div className="p-4 bg-gray-800/50 rounded-lg border border-red-900/20">
               <div className="flex items-center gap-2 mb-2">
-                <Link2 className="h-4 w-4 text-magenta-400" />
+                <Link2 className="h-4 w-4 text-red-400" />
                 <span className="text-sm font-medium text-white">Decoded URL:</span>
               </div>
               <p className="text-gray-300 break-all">{decodedUrl}</p>
@@ -129,14 +129,14 @@ const QRDecoder = () => {
               <Button
                 onClick={copyToClipboard}
                 variant="outline"
-                className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="flex-1 border-red-800/50 text-gray-300 hover:bg-gray-800"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Copy URL
               </Button>
               <Button
                 onClick={openUrl}
-                className="flex-1 bg-gradient-to-r from-magenta-600 to-purple-600 hover:from-magenta-700 hover:to-purple-700"
+                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Open Link
